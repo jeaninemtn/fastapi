@@ -7,6 +7,7 @@ Python(透過 ORM)描述資料庫的表格結構
 """
 
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 from app.database import Base
 
 class User(Base):
@@ -16,3 +17,6 @@ class User(Base):
     username = Column(String(50), nullable=False)
     email = Column(String(100), unique=True, index=True)
     password = Column(String(255), nullable=False)
+
+     # 一個使用者可以有多個 project
+    projects = relationship("Project", back_populates="user")

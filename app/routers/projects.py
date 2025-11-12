@@ -21,17 +21,21 @@ def get_db():
 
 # GET all projects
 @router.get("/", response_model=List[ProjectRead])
-def get_projects(db: Session = Depends(get_db)):
-    return db.query(Project).all()
+def get_projects(db: Session = Depends(get_db), current_user_id: int = 1):
+    return db.query(Project).filter(Project.user_id == current_user_id).all()
 
 # POST create project
 @router.post("/", response_model=ProjectRead)
-def create_project(project: ProjectCreate, db: Session = Depends(get_db)):
-    db_project = Project(name=project.name, description=project.description)
-    db.add(db_project)
+def create_project(project: ProjectCreate, db: Session = Depends(get_db), current_user_id: int = 1):  # TODO: 登入機制
+    new_project = Project(
+        name=project.name,
+        description=project.description,
+        user_id=current_user_id
+    )
+    db.add(new_project)
     db.commit()
-    db.refresh(db_project)
-    return db_project
+    db.refresh(new_project)
+    return new_project
 
 # GET project detail
 @router.get("/{project_id}", response_model=ProjectRead)
